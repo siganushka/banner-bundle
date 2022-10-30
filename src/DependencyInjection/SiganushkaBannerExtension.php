@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Siganushka\BannerBundle\DependencyInjection;
 
+use Siganushka\BannerBundle\Doctrine\EventListener\EntityToSuperclassListener;
 use Siganushka\BannerBundle\Entity\Banner;
+use Siganushka\BannerBundle\Repository\BannerRepository;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
@@ -20,10 +22,14 @@ class SiganushkaBannerExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter('siganushka_banner.banner_class', $config['banner_class']);
+        $bannerRepositoryDef = $container->findDefinition(BannerRepository::class);
+        $bannerRepositoryDef->setArgument('$entityClass', $config['banner_class']);
 
-        if (Banner::class === $config['banner_class']) {
-            $container->removeDefinition('siganushka_banner.doctrine.listener.entity_to_superclass');
+        $entityToSuperclassListenerDef = $container->findDefinition(EntityToSuperclassListener::class);
+        $entityToSuperclassListenerDef->addTag('doctrine.event_listener', ['event' => 'loadClassMetadata']);
+
+        if (Banner::class !== $config['banner_class']) {
+            $entityToSuperclassListenerDef->setArgument(0, [Banner::class]);
         }
     }
 }

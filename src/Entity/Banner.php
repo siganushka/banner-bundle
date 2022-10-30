@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Siganushka\BannerBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Siganushka\BannerBundle\Repository\BannerRepository;
 use Siganushka\Contracts\Doctrine\EnableInterface;
 use Siganushka\Contracts\Doctrine\EnableTrait;
 use Siganushka\Contracts\Doctrine\ResourceInterface;
@@ -16,7 +17,7 @@ use Siganushka\Contracts\Doctrine\TimestampableTrait;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\MappedSuperclass
+ * @ORM\Entity(repositoryClass=BannerRepository::class)
  */
 class Banner implements ResourceInterface, EnableInterface, SortableInterface, TimestampableInterface
 {

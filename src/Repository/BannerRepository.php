@@ -31,15 +31,12 @@ class BannerRepository extends ServiceEntityRepository
         ;
     }
 
-    /**
-     * @param array ...$arguments
-     */
-    public function createNew(...$arguments): Banner
+    public function createNew(): Banner
     {
         $ref = new \ReflectionClass($this->_entityName);
 
         /** @var Banner */
-        $entity = $ref->newInstanceArgs($arguments);
+        $entity = $ref->newInstance();
         $entity->setSorted(SortableInterface::DEFAULT_SORTED);
         $entity->setEnabled(true);
 
