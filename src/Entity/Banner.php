@@ -14,7 +14,7 @@ use Siganushka\Contracts\Doctrine\SortableInterface;
 use Siganushka\Contracts\Doctrine\SortableTrait;
 use Siganushka\Contracts\Doctrine\TimestampableInterface;
 use Siganushka\Contracts\Doctrine\TimestampableTrait;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Siganushka\MediaBundle\Entity\Media;
 
 /**
  * @ORM\Entity(repositoryClass=BannerRepository::class)
@@ -28,17 +28,14 @@ class Banner implements ResourceInterface, EnableInterface, SortableInterface, T
 
     /**
      * @ORM\Column(type="string")
-     *
-     * @Groups({"banner"})
      */
     private ?string $title = null;
 
     /**
-     * @ORM\Column(type="string")
-     *
-     * @Groups({"banner"})
+     * @ORM\ManyToOne(targetEntity=Media::class)
+     * @ORM\JoinColumn(nullable=false)
      */
-    private ?string $img = null;
+    private ?Media $img = null;
 
     public function getTitle(): ?string
     {
@@ -52,12 +49,12 @@ class Banner implements ResourceInterface, EnableInterface, SortableInterface, T
         return $this;
     }
 
-    public function getImg(): ?string
+    public function getImg(): ?Media
     {
         return $this->img;
     }
 
-    public function setImg(?string $img): self
+    public function setImg(?Media $img): self
     {
         $this->img = $img;
 

@@ -5,36 +5,45 @@ declare(strict_types=1);
 namespace Siganushka\BannerBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
-use FOS\RestBundle\Context\Context;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
-use FOS\RestBundle\View\View;
 use Knp\Component\Pager\PaginatorInterface;
-use Siganushka\BannerBundle\Form\Type\BannerType;
+use Siganushka\BannerBundle\Form\BannerType;
 use Siganushka\BannerBundle\Repository\BannerRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
-class BannerController extends AbstractFOSRestController
+class BannerController extends AbstractController
 {
+    protected SerializerInterface $serializer;
     protected BannerRepository $bannerRepository;
 
-    public function __construct(BannerRepository $bannerRepository)
+    public function __construct(SerializerInterface $serializer, BannerRepository $bannerRepository)
     {
+        $this->serializer = $serializer;
         $this->bannerRepository = $bannerRepository;
     }
 
+    /**
+     * @Route("/banners", methods={"GET"})
+     */
     public function getCollection(Request $request, PaginatorInterface $paginator): Response
     {
-        $queryBuilder = $this->bannerRepository->createQueryBuilderWithSorted();
+        $queryBuilder = $this->bannerRepository->createQueryBuilder('b');
 
         $page = $request->query->getInt('page', 1);
         $size = $request->query->getInt('size', 10);
 
         $pagination = $paginator->paginate($queryBuilder, $page, $size);
 
-        return $this->viewResponse($pagination);
+        return $this->createResponse($pagination);
     }
 
+    /**
+     * @Route("/banners", methods={"POST"})
+     */
     public function postCollection(Request $request, EntityManagerInterface $entityManager): Response
     {
         $entity = $this->bannerRepository->createNew();
@@ -43,70 +52,75 @@ class BannerController extends AbstractFOSRestController
         $form->submit($request->request->all());
 
         if (!$form->isValid()) {
-            return $this->viewResponse($form);
+            return $this->createResponse($form);
         }
 
         $entityManager->persist($entity);
         $entityManager->flush();
 
-        return $this->viewResponse($entity);
+        return $this->createResponse($entity);
     }
 
+    /**
+     * @Route("/banners/{id<\d+>}", methods={"GET"})
+     */
     public function getItem(int $id): Response
     {
         $entity = $this->bannerRepository->find($id);
         if (!$entity) {
-            throw $this->createNotFoundException(sprintf('Resource with value "%d" not found.', $id));
+            throw $this->createNotFoundException(sprintf('Resource #%d not found.', $id));
         }
 
-        return $this->viewResponse($entity);
+        return $this->createResponse($entity);
     }
 
+    /**
+     * @Route("/banners/{id<\d+>}", methods={"PUT", "PATCH"})
+     */
     public function putItem(Request $request, EntityManagerInterface $entityManager, int $id): Response
     {
         $entity = $this->bannerRepository->find($id);
         if (!$entity) {
-            throw $this->createNotFoundException(sprintf('Resource with value "%d" not found.', $id));
+            throw $this->createNotFoundException(sprintf('Resource #%d not found.', $id));
         }
 
         $form = $this->createForm(BannerType::class, $entity);
         $form->submit($request->request->all(), !$request->isMethod('PATCH'));
 
         if (!$form->isValid()) {
-            return $this->viewResponse($form);
+            return $this->createResponse($form);
         }
 
         $entityManager->flush();
 
-        return $this->viewResponse($entity);
+        return $this->createResponse($entity);
     }
 
+    /**
+     * @Route("/banners/{id<\d+>}", methods={"DELETE"})
+     */
     public function deleteItem(EntityManagerInterface $entityManager, int $id): Response
     {
         $entity = $this->bannerRepository->find($id);
         if (!$entity) {
-            throw $this->createNotFoundException(sprintf('Resource with value "%d" not found.', $id));
+            throw $this->createNotFoundException(sprintf('Resource #%d not found.', $id));
         }
 
         $entityManager->remove($entity);
         $entityManager->flush();
 
         // 204 no content response
-        return $this->viewResponse(null, Response::HTTP_NO_CONTENT);
+        return $this->createResponse(null, Response::HTTP_NO_CONTENT);
     }
 
-    protected function viewResponse($data = null, int $statusCode = null, array $headers = []): Response
+    /**
+     * @param mixed $data
+     */
+    protected function createResponse($data = null, int $statusCode = Response::HTTP_OK, array $headers = []): Response
     {
-        $context = new Context();
-        $context->setGroups([
-            'trait_resource', 'trait_sortable', 'trait_enable', 'trait_timestampable',
-            'banner',
-            'media',
-        ]);
+        $attributes = ['id', 'title', 'img', 'sort', 'enabled', 'updatedAt', 'createdAt'];
+        $json = $this->serializer->serialize($data, 'json', compact('attributes'));
 
-        $view = View::create($data, $statusCode, $headers);
-        $view->setContext($context);
-
-        return $this->getViewHandler()->handle($view);
+        return JsonResponse::fromJsonString($json, $statusCode, $headers);
     }
 }

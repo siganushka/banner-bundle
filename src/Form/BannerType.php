@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Siganushka\BannerBundle\Form\Type;
+namespace Siganushka\BannerBundle\Form;
 
 use Siganushka\BannerBundle\Entity\Banner;
 use Siganushka\BannerBundle\Media\BannerImg;
-use Siganushka\MediaBundle\Form\Type\MediaUrlType;
+use Siganushka\MediaBundle\Form\Type\MediaType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -24,18 +24,17 @@ class BannerType extends AbstractType
                 'label' => 'banner.title',
                 'constraints' => new NotBlank(),
             ])
-            ->add('img', MediaUrlType::class, [
+            ->add('img', MediaType::class, [
                 'label' => 'banner.img',
                 'channel' => BannerImg::class,
                 'constraints' => new NotBlank(),
+                'style' => 'width: auto; min-height: 150px',
             ])
-            ->add('sorted', IntegerType::class, [
-                'label' => 'banner.sorted',
-                'priority' => -1,
+            ->add('sort', IntegerType::class, [
+                'label' => 'generic.sort',
             ])
             ->add('enabled', CheckboxType::class, [
-                'label' => 'banner.enabled',
-                'priority' => -1,
+                'label' => 'generic.enabled',
             ])
         ;
     }
