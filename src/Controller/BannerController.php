@@ -10,7 +10,6 @@ use Siganushka\BannerBundle\Form\BannerType;
 use Siganushka\BannerBundle\Repository\BannerRepository;
 use Siganushka\GenericBundle\Exception\FormErrorException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -48,6 +47,7 @@ class BannerController extends AbstractController
     public function postCollection(Request $request, EntityManagerInterface $entityManager): Response
     {
         $entity = $this->bannerRepository->createNew();
+        $entity->setEnabled(true);
 
         $form = $this->createForm(BannerType::class, $entity);
         $form->submit($request->request->all());
@@ -120,8 +120,7 @@ class BannerController extends AbstractController
     protected function createResponse($data = null, int $statusCode = Response::HTTP_OK, array $headers = []): Response
     {
         $attributes = ['id', 'title', 'img', 'sort', 'enabled', 'updatedAt', 'createdAt'];
-        $json = $this->serializer->serialize($data, 'json', compact('attributes'));
 
-        return JsonResponse::fromJsonString($json, $statusCode, $headers);
+        return $this->json($data, $statusCode, $headers, compact('attributes'));
     }
 }
