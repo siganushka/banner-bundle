@@ -13,16 +13,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class BannerController extends AbstractController
 {
-    protected SerializerInterface $serializer;
     protected BannerRepository $bannerRepository;
 
-    public function __construct(SerializerInterface $serializer, BannerRepository $bannerRepository)
+    public function __construct(BannerRepository $bannerRepository)
     {
-        $this->serializer = $serializer;
         $this->bannerRepository = $bannerRepository;
     }
 
