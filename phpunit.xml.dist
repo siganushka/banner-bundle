@@ -5,7 +5,7 @@
     bootstrap="vendor/autoload.php">
 
     <testsuites>
-        <testsuite name="Siganushka Banner Bundle Test Suite">
+        <testsuite name="Siganushka BannerBundle Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>

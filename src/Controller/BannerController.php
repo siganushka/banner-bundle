@@ -5,27 +5,28 @@ declare(strict_types=1);
 namespace Siganushka\BannerBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Siganushka\BannerBundle\Entity\Banner;
 use Siganushka\BannerBundle\Form\BannerType;
 use Siganushka\BannerBundle\Repository\BannerRepository;
 use Siganushka\GenericBundle\Exception\FormErrorException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
+#[Route('/banners')]
 class BannerController extends AbstractController
 {
-    protected BannerRepository $bannerRepository;
-
-    public function __construct(BannerRepository $bannerRepository)
+    public function __construct(protected BannerRepository $bannerRepository)
     {
-        $this->bannerRepository = $bannerRepository;
     }
 
-    /**
-     * @Route("/banners", methods={"GET"})
-     */
+    #[Route(methods: 'GET')]
     public function getCollection(Request $request, PaginatorInterface $paginator): Response
     {
         $queryBuilder = $this->bannerRepository->createQueryBuilder('b');
@@ -38,9 +39,7 @@ class BannerController extends AbstractController
         return $this->createResponse($pagination);
     }
 
-    /**
-     * @Route("/banners", methods={"POST"})
-     */
+    #[Route(methods: 'POST')]
     public function postCollection(Request $request, EntityManagerInterface $entityManager): Response
     {
         $entity = $this->bannerRepository->createNew();
@@ -59,9 +58,7 @@ class BannerController extends AbstractController
         return $this->createResponse($entity);
     }
 
-    /**
-     * @Route("/banners/{id<\d+>}", methods={"GET"})
-     */
+    #[Route('/{id<\d+>}', methods: 'GET')]
     public function getItem(int $id): Response
     {
         $entity = $this->bannerRepository->find($id);
@@ -72,9 +69,7 @@ class BannerController extends AbstractController
         return $this->createResponse($entity);
     }
 
-    /**
-     * @Route("/banners/{id<\d+>}", methods={"PUT", "PATCH"})
-     */
+    #[Route('/{id<\d+>}', methods: ['PUT', 'PATCH'])]
     public function putItem(Request $request, EntityManagerInterface $entityManager, int $id): Response
     {
         $entity = $this->bannerRepository->find($id);
@@ -94,9 +89,7 @@ class BannerController extends AbstractController
         return $this->createResponse($entity);
     }
 
-    /**
-     * @Route("/banners/{id<\d+>}", methods={"DELETE"})
-     */
+    #[Route('/{id<\d+>}', methods: 'DELETE')]
     public function deleteItem(EntityManagerInterface $entityManager, int $id): Response
     {
         $entity = $this->bannerRepository->find($id);
@@ -111,10 +104,7 @@ class BannerController extends AbstractController
         return $this->createResponse(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @param mixed $data
-     */
-    protected function createResponse($data = null, int $statusCode = Response::HTTP_OK, array $headers = []): Response
+    protected function createResponse(PaginationInterface|Banner|null $data, int $statusCode = Response::HTTP_OK, array $headers = []): Response
     {
         $attributes = ['id', 'title', 'img', 'sort', 'enabled', 'updatedAt', 'createdAt'];
 

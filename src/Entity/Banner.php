@@ -16,9 +16,7 @@ use Siganushka\Contracts\Doctrine\TimestampableInterface;
 use Siganushka\Contracts\Doctrine\TimestampableTrait;
 use Siganushka\MediaBundle\Entity\Media;
 
-/**
- * @ORM\Entity(repositoryClass=BannerRepository::class)
- */
+#[ORM\Entity(repositoryClass: BannerRepository::class)]
 class Banner implements ResourceInterface, EnableInterface, SortableInterface, TimestampableInterface
 {
     use EnableTrait;
@@ -26,15 +24,11 @@ class Banner implements ResourceInterface, EnableInterface, SortableInterface, T
     use SortableTrait;
     use TimestampableTrait;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Column]
     private ?string $title = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Media::class)
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: Media::class)]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Media $img = null;
 
     public function getTitle(): ?string
@@ -42,7 +36,7 @@ class Banner implements ResourceInterface, EnableInterface, SortableInterface, T
         return $this->title;
     }
 
-    public function setTitle(?string $title): self
+    public function setTitle(?string $title): static
     {
         $this->title = $title;
 
@@ -54,7 +48,7 @@ class Banner implements ResourceInterface, EnableInterface, SortableInterface, T
         return $this->img;
     }
 
-    public function setImg(?Media $img): self
+    public function setImg(?Media $img): static
     {
         $this->img = $img;
 

@@ -22,7 +22,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('banner_class')
                     ->defaultValue(Banner::class)
                     ->validate()
-                    ->ifTrue(function ($v) {
+                    ->ifTrue(function (mixed $v) {
                         if (!class_exists($v)) {
                             return false;
                         }
