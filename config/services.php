@@ -14,11 +14,11 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     $ref = new \ReflectionClass(SiganushkaBannerBundle::class);
-    $services->load($ref->getNamespaceName().'\\', '../../')
+    $services->load($ref->getNamespaceName().'\\', '../src/')
         ->exclude([
-            '../../DependencyInjection/',
-            '../../Entity/',
-            '../../Resources/',
-            '../../SiganushkaBannerBundle.php',
+            '../src/DependencyInjection/',
+            '../src/Entity/',
+            '../src/Resources/',
+            '../src/SiganushkaBannerBundle.php',
         ]);
 };

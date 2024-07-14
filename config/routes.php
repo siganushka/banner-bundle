@@ -8,7 +8,5 @@ use Siganushka\BannerBundle\SiganushkaBannerBundle;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 return static function (RoutingConfigurator $routes): void {
-    $ref = new \ReflectionClass(SiganushkaBannerBundle::class);
-
-    $routes->import(\dirname($ref->getFileName()).'/Controller', 'attribute');
+    $routes->import('../src/Controller', 'attribute');
 };
