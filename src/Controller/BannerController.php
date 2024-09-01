@@ -63,7 +63,7 @@ class BannerController extends AbstractController
     {
         $entity = $this->bannerRepository->find($id);
         if (!$entity) {
-            throw $this->createNotFoundException(sprintf('Resource #%d not found.', $id));
+            throw $this->createNotFoundException(\sprintf('Resource #%d not found.', $id));
         }
 
         return $this->createResponse($entity);
@@ -74,7 +74,7 @@ class BannerController extends AbstractController
     {
         $entity = $this->bannerRepository->find($id);
         if (!$entity) {
-            throw $this->createNotFoundException(sprintf('Resource #%d not found.', $id));
+            throw $this->createNotFoundException(\sprintf('Resource #%d not found.', $id));
         }
 
         $form = $this->createForm(BannerType::class, $entity);
@@ -94,7 +94,7 @@ class BannerController extends AbstractController
     {
         $entity = $this->bannerRepository->find($id);
         if (!$entity) {
-            throw $this->createNotFoundException(sprintf('Resource #%d not found.', $id));
+            throw $this->createNotFoundException(\sprintf('Resource #%d not found.', $id));
         }
 
         $entityManager->remove($entity);

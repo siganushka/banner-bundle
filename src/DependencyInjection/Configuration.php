@@ -22,16 +22,10 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('banner_class')
                     ->defaultValue(Banner::class)
                     ->validate()
-                    ->ifTrue(function (mixed $v) {
-                        if (!class_exists($v)) {
-                            return false;
-                        }
-
-                        return !is_subclass_of($v, Banner::class);
-                    })
-                    ->thenInvalid('The %s class must extends '.Banner::class.' for using the "banner_class".')
+                        ->ifTrue(static fn (mixed $v): bool => !is_a($v, Banner::class, true))
+                        ->thenInvalid('The value must be instanceof '.Banner::class.', %s given.')
+                    ->end()
                 ->end()
-            ->end()
         ;
 
         return $treeBuilder;
