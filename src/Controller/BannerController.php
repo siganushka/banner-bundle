@@ -19,14 +19,13 @@ use Symfony\Component\Routing\Attribute\Route;
 /**
  * @psalm-suppress PropertyNotSetInConstructor
  */
-#[Route('/banners')]
 class BannerController extends AbstractController
 {
     public function __construct(protected BannerRepository $bannerRepository)
     {
     }
 
-    #[Route(methods: 'GET')]
+    #[Route('/banners', methods: 'GET')]
     public function getCollection(Request $request, PaginatorInterface $paginator): Response
     {
         $queryBuilder = $this->bannerRepository->createQueryBuilder('b');
@@ -39,7 +38,7 @@ class BannerController extends AbstractController
         return $this->createResponse($pagination);
     }
 
-    #[Route(methods: 'POST')]
+    #[Route('/banners', methods: 'POST')]
     public function postCollection(Request $request, EntityManagerInterface $entityManager): Response
     {
         $entity = $this->bannerRepository->createNew();
@@ -58,7 +57,7 @@ class BannerController extends AbstractController
         return $this->createResponse($entity);
     }
 
-    #[Route('/{id<\d+>}', methods: 'GET')]
+    #[Route('/banners/{id<\d+>}', methods: 'GET')]
     public function getItem(int $id): Response
     {
         $entity = $this->bannerRepository->find($id);
@@ -69,7 +68,7 @@ class BannerController extends AbstractController
         return $this->createResponse($entity);
     }
 
-    #[Route('/{id<\d+>}', methods: ['PUT', 'PATCH'])]
+    #[Route('/banners/{id<\d+>}', methods: ['PUT', 'PATCH'])]
     public function putItem(Request $request, EntityManagerInterface $entityManager, int $id): Response
     {
         $entity = $this->bannerRepository->find($id);
@@ -89,7 +88,7 @@ class BannerController extends AbstractController
         return $this->createResponse($entity);
     }
 
-    #[Route('/{id<\d+>}', methods: 'DELETE')]
+    #[Route('/banners/{id<\d+>}', methods: 'DELETE')]
     public function deleteItem(EntityManagerInterface $entityManager, int $id): Response
     {
         $entity = $this->bannerRepository->find($id);
@@ -100,7 +99,7 @@ class BannerController extends AbstractController
         $entityManager->remove($entity);
         $entityManager->flush();
 
-        // 204 no content response
+        // 204 No Content
         return $this->createResponse(null, Response::HTTP_NO_CONTENT);
     }
 
